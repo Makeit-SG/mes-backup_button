@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart' as material;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as p;
 
@@ -70,32 +71,32 @@ class _HiveBackupButtonState extends State<HiveBackupButton> {
 
             // -------------------- (A) HIVE BACKUP (your existing folder copy) --------------------
           
-            // String hivePath = (await getApplicationSupportDirectory()).path;
+            String hivePath = (await getApplicationSupportDirectory()).path;
 
-            // final Directory hiveDir = Directory(hivePath);
-            // if (await Permission.manageExternalStorage.request().isGranted) {
-            //   if (await hiveDir.exists()) {
-            //     if (!await backupDir.exists()) {
-            //       await backupDir.create(recursive: true);
-            //     }
+            final Directory hiveDir = Directory(hivePath);
+            if (await Permission.manageExternalStorage.request().isGranted) {
+              if (await hiveDir.exists()) {
+                if (!await backupDir.exists()) {
+                  await backupDir.create(recursive: true);
+                }
 
-            //     // Get all files in the backup directory
-            //     List<FileSystemEntity> backupFiles = hiveDir.listSync();
+                // Get all files in the backup directory
+                List<FileSystemEntity> backupFiles = hiveDir.listSync();
 
-            //     // Copy each file from backup to the Hive directory
-            //     for (FileSystemEntity entity in backupFiles) {
-            //       if (entity is File) {
-            //         final String fileName = entity.uri.pathSegments.last;
-            //         final File destinationFile = File('${widget.backupPath}/$fileName');
-            //         if (await destinationFile.exists()) {
-            //           await destinationFile
-            //               .delete(); // Remove the old file if necessary
-            //         }
-            //         await entity.copy(destinationFile.path);
-            //       }
-            //     }
-            //   }
-            // }
+                // Copy each file from backup to the Hive directory
+                for (FileSystemEntity entity in backupFiles) {
+                  if (entity is File) {
+                    final String fileName = entity.uri.pathSegments.last;
+                    final File destinationFile = File('${widget.backupPath}/$fileName');
+                    if (await destinationFile.exists()) {
+                      await destinationFile
+                          .delete(); // Remove the old file if necessary
+                    }
+                    await entity.copy(destinationFile.path);
+                  }
+                }
+              }
+            }
 
             // -------------------- (B) DRIFT BACKUP (SQLite + wal/shm) --------------------
 
