@@ -71,7 +71,7 @@ class _HiveBackupButtonState extends State<HiveBackupButton> {
 
             // -------------------- (A) HIVE BACKUP (your existing folder copy) --------------------
           
-            String hivePath = (await getApplicationSupportDirectory()).path;
+            String hivePath = (await getExternalStorageDirectory())!.path;
 
             final Directory hiveDir = Directory(hivePath);
             if (await Permission.manageExternalStorage.request().isGranted) {
